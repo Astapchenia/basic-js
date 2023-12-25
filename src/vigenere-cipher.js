@@ -20,13 +20,66 @@ const { NotImplementedError } = require('../extensions/index.js');
  * 
  */
 class VigenereCipheringMachine {
-  encrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  constructor(isDirect = true) {
+    this.isDirect = isDirect;
   }
-  decrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+
+  encrypt(message, keyword) {
+    if (!message || !keyword) {
+      throw new Error('Invalid input. Message and keyword are required.');
+    }
+
+    message = message.toUpperCase();
+    keyword = keyword.toUpperCase();
+
+    const encrypted = [];
+    let keywordIndex = 0;
+
+    for (let i = 0; i < message.length; i++) {
+      const char = message[i];
+
+      if (char >= 'A' && char <= 'Z') {
+        const shift = keyword[keywordIndex % keyword.length].charCodeAt(0) - 65;
+        const encryptedChar = String.fromCharCode(
+          ((char.charCodeAt(0) - 65 + shift) % 26) + 65
+        );
+        encrypted.push(encryptedChar);
+        keywordIndex++;
+      } else {
+        encrypted.push(char);
+      }
+    }
+
+    return this.isDirect ? encrypted.join('') : encrypted.reverse().join('');
+  }
+
+  decrypt(encryptedMessage, keyword) {
+    if (!encryptedMessage || !keyword) {
+      throw new Error('Invalid input. Encrypted message and keyword are required.');
+    }
+
+    encryptedMessage = encryptedMessage.toUpperCase();
+    keyword = keyword.toUpperCase();
+
+    const decrypted = [];
+    let keywordIndex = 0;
+
+    for (let i = 0; i < encryptedMessage.length; i++) {
+      const char = encryptedMessage[i];
+
+      if (char >= 'A' && char <= 'Z') {
+        const shift = keyword[keywordIndex % keyword.length].charCodeAt(0) - 65;
+        const decryptedChar = String.fromCharCode(
+          ((char.charCodeAt(0) - 65 - shift + 26) % 26) + 65
+        );
+        decrypted.push(decryptedChar);
+        keywordIndex++;
+      } else {
+        decrypted.push(char);
+      }
+    }
+
+    return this.isDirect ? decrypted.join('') : decrypted.reverse().join('');
   }
 }
 
